@@ -46,8 +46,12 @@ h1{font-size:20px;margin:0 0 3px;letter-spacing:.01em}
 /* 记录栏粘住视口，列表自身滚动，滚页面时记录不跟着跑掉。
    断点与上面的三栏断点对齐（1101px 起就是三栏），否则"三栏但记录栏不粘"很割裂。 */
 @media(min-width:1101px){
-  .col-r{position:sticky;top:14px;max-height:calc(100vh - 28px)}
-  .col-r .panel.rec-panel{display:flex;flex-direction:column;min-height:0;flex:1 1 auto}
+  /* v1-gh 修复：右栏限高后必须允许自身滚动，否则展开「GitHub 云同步设置」时
+     令牌输入框和连接按钮落在视口外且滚不到（max-height 会裁掉溢出内容）。 */
+  .col-r{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;
+    overflow-x:hidden;overscroll-behavior:contain}
+  /* 不再 flex:1 撑满视口——按内容自然高度排布，配置区才不会被列表挤出去 */
+  .col-r .panel.rec-panel{display:flex;flex-direction:column;min-height:0;flex:0 0 auto}
 }
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;
   box-shadow:0 1px 2px rgba(16,30,54,.045)}
@@ -162,7 +166,9 @@ ul.tips li.on b{color:var(--accent)}
    v19：工具按钮合并成一行并移到面板最底、note 缩短后，顶部到底部固定占用变少，
    扣减从 320px 降到 235px。
    v20：标题下新增个股筛选条（约 34px），扣减再调到 270px。 */
-.rec-list{flex:1 1 auto;min-height:190px;max-height:calc(100vh - 270px);
+/* v1-gh：扣减从 270px 提到 420px，为右栏底部展开的 GitHub 配置面板
+   （含 5 个输入框 + 2 按钮，约 150px）预留空间，避免它被列表顶出视口。 */
+.rec-list{flex:1 1 auto;min-height:190px;max-height:calc(100vh - 420px);
   overflow-y:auto;overflow-x:hidden;margin:0 -4px;padding:0 4px;overscroll-behavior:contain}
 /* 记录不在右侧独立栏时（≤960px 退成两栏/单栏），按视口高度给一个合理上限。
    断点跟 .grid 的两栏断点对齐。 */
